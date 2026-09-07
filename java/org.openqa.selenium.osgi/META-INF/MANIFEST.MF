@@ -49,7 +49,9 @@ Bundle-ClassPath: selenium-api-4.13.0.jar,
  lib/json-20080701.jar
 Bundle-Vendor: openqa
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.openqa.selenium,
+Export-Package: com.google.common.base,
+ com.google.common.collect,
+ org.openqa.selenium,
  org.json,
  org.openqa.selenium.chrome,
  org.openqa.selenium.chromium,
