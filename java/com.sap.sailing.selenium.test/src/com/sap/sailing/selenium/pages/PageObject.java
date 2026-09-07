@@ -523,19 +523,28 @@ public class PageObject {
     }
     
     /**
-     * Waits for an element inside a possibly animated container to have a stable, exposed click target, then clicks it
-     * using WebDriver. JavaScript is only used to observe layout and hit-testing; the click remains a native WebDriver
-     * click.
+     * Waits for an element inside a possibly animated container to become interactable, then clicks it using WebDriver.
      */
-    protected void clickWhenInteractable(Supplier<WebElement> elementSupplier) {
+    protected void clickWhenInteractable(final Supplier<WebElement> elementSupplier) {
+        final WebElement element = waitUntilInteractable(elementSupplier);
+        element.click();
+    }
+
+    /**
+     * Waits for an element inside a possibly animated container to have a stable, exposed interaction point. JavaScript
+     * is only used to observe layout and hit-testing; the returned element can be used for native WebDriver operations.
+     *
+     * @return the stable, exposed element supplied by {@code elementSupplier}
+     */
+    protected WebElement waitUntilInteractable(final Supplier<WebElement> elementSupplier) {
         final String[] previousLayoutSignature = new String[1];
         final int[] stableLayoutSamples = new int[1];
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(DEFAULT_LOOKUP_TIMEOUT));
+        final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(DEFAULT_LOOKUP_TIMEOUT));
         wait.pollingEvery(Duration.ofMillis(100));
-        wait.until(webDriver -> {
-            boolean clicked = false;
+        final WebElement interactableElement = wait.until(webDriver -> {
+            WebElement result = null;
             try {
-                WebElement element = elementSupplier.get();
+                final WebElement element = elementSupplier.get();
                 String layoutSignature = null;
                 if (element.isDisplayed() && element.isEnabled()) {
                     layoutSignature = getInteractableLayoutSignature(element);
@@ -551,8 +560,7 @@ public class PageObject {
                         stableLayoutSamples[0] = 1;
                     }
                     if (stableLayoutSamples[0] >= 3) {
-                        element.click();
-                        clicked = true;
+                        result = element;
                     }
                 }
             } catch (ElementNotInteractableException | JavascriptException | NoSuchElementException
@@ -560,8 +568,9 @@ public class PageObject {
                 previousLayoutSignature[0] = null;
                 stableLayoutSamples[0] = 0;
             }
-            return clicked;
+            return result;
         });
+        return interactableElement;
     }
 
     /**
