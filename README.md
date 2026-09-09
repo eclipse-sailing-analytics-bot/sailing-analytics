@@ -8,6 +8,7 @@
 [![CodeQL](https://github.com/eclipse-sailing-analytics/sailing-analytics/workflows/CodeQL/badge.svg)](https://github.com/eclipse-sailing-analytics/sailing-analytics/security/code-scanning)
 [![GitHub license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://raw.githubusercontent.com/eclipse-sailing-analytics/sailing-analytics/main/LICENSE)
 [![Downloads](https://img.shields.io/badge/download-all%20releases-brightgreen.svg)](https://github.com/eclipse-sailing-analytics/sailing-analytics/releases/)
+[![Container image](https://img.shields.io/badge/container-ghcr.io%2Feclipse--sailing--analytics%2Fsailing--analytics-2496ED?logo=docker&logoColor=white)](https://github.com/eclipse-sailing-analytics/sailing-analytics/pkgs/container/sailing-analytics)
 
 ## About this Project
 
