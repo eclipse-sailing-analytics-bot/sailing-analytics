@@ -5,8 +5,8 @@
 # Sailing Analytics
 
 [![REUSE status](https://api.reuse.software/badge/github.com/eclipse-sailing-analytics/sailing-analytics)](https://api.reuse.software/info/github.com/eclipse-sailing-analytics/sailing-analytics)
-[![CodeQL](https://github.com/tesseract-ocr/tesseract/workflows/CodeQL/badge.svg)](https://github.com/tesseract-ocr/tesseract/security/code-scanning)
-[![GitHub license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://raw.githubusercontent.com/tesseract-ocr/tesseract/main/LICENSE)
+[![CodeQL](https://github.com/eclipse-sailing-analytics/sailing-analytics/workflows/CodeQL/badge.svg)](https://github.com/eclipse-sailing-analytics/sailing-analytics/security/code-scanning)
+[![GitHub license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://raw.githubusercontent.com/eclipse-sailing-analytics/sailing-analytics/main/LICENSE)
 [![Downloads](https://img.shields.io/badge/download-all%20releases-brightgreen.svg)](https://github.com/eclipse-sailing-analytics/sailing-analytics/releases/)
 
 ## About this Project
