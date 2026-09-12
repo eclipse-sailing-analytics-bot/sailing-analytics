@@ -5123,9 +5123,9 @@ Replicator {
 
     /**
      * Invokes the callbacks {@link #removeListenersForNewRaceTracker(RaceTracker) claimed} for a newly added
-     * {@code tracker}. Intended to be called <em>after</em> the {@link #raceTrackersByRegattaLock} write lock has
-     * been released, as a callback may block (e.g. waiting for race logs to attach) and holding the global lock
-     * across such a wait would stall all other readers and writers of {@link #raceTrackersByRegatta}.
+     * {@code tracker}. Intended to be called <em>after</em> the {@link #raceTrackersByRegattaLock} write lock has been
+     * released, as a callback may block (e.g. waiting for race logs to attach) and holding the global lock across such
+     * a wait would stall all other readers and writers of {@link #raceTrackersByRegatta}.
      */
     private void invokeRaceTrackerCallbacks(RaceTracker tracker, Set<Consumer<RaceTracker>> callbacks) {
         if (callbacks != null) {
