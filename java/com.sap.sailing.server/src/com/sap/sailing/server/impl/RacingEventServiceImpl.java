@@ -2231,6 +2231,40 @@ Replicator {
     }
 
     /**
+     * Claims (removes and returns) the callbacks registered for the {@code tracker}'s
+     * {@link RaceTracker#getRaceIdentifier() race identifier}. This must run under the
+     * {@link #raceTrackersByRegattaLock} write lock, atomically with the insertion of the tracker into
+     * {@link #raceTrackersByRegatta}, so that a concurrent {@link #getRaceTrackerByRegattaAndRaceIdentifier} (which
+     * under the read lock either finds the tracker or enqueues its callback) can never end up with a callback that is
+     * neither invoked directly nor picked up here. The returned callbacks are meant to be
+     * {@link #invokeRaceTrackerCallbacks(RaceTracker, Set) invoked afterwards}, outside the lock, because invoking them
+     * may block (e.g. tracker startup waiting for race logs to attach) and must not hold the global
+     * {@link #raceTrackersByRegattaLock} while doing so.
+     */
+    private Set<Consumer<RaceTracker>> removeListenersForNewRaceTracker(RaceTracker tracker) {
+        final RaceIdentifier raceIdentifier = tracker.getRaceIdentifier();
+        final Set<Consumer<RaceTracker>> result;
+        if (raceIdentifier != null) {
+            result = getRaceTrackerCallbacks().remove(raceIdentifier);
+        } else {
+            result = null;
+        }
+        return result;
+    }
+
+    /**
+     * Invokes the callbacks {@link #removeListenersForNewRaceTracker(RaceTracker) claimed} for a newly added
+     * {@code tracker}. Intended to be called <em>after</em> the {@link #raceTrackersByRegattaLock} write lock has been
+     * released, as a callback may block (e.g. waiting for race logs to attach) and holding the global lock across such
+     * a wait would stall all other readers and writers of {@link #raceTrackersByRegatta}.
+     */
+    private void invokeRaceTrackerCallbacks(RaceTracker tracker, Set<Consumer<RaceTracker>> callbacks) {
+        if (callbacks != null) {
+            callbacks.forEach((callback) -> callback.accept(tracker));
+        }
+    }
+
+    /**
      * Remembers the link between the {@link RaceDefinition} that the {@code tracker} just produced and its
      * {@link RaceTracker#getConnectivityParams() connectivity parameters}. This is important for later removing those
      * connectivity parameters from the
@@ -5097,40 +5131,6 @@ Replicator {
             }
         }
         return raceTrackerCallbacks;
-    }
-
-    /**
-     * Claims (removes and returns) the callbacks registered for the {@code tracker}'s
-     * {@link RaceTracker#getRaceIdentifier() race identifier}. This must run under the
-     * {@link #raceTrackersByRegattaLock} write lock, atomically with the insertion of the tracker into
-     * {@link #raceTrackersByRegatta}, so that a concurrent {@link #getRaceTrackerByRegattaAndRaceIdentifier} (which
-     * under the read lock either finds the tracker or enqueues its callback) can never end up with a callback that is
-     * neither invoked directly nor picked up here. The returned callbacks are meant to be
-     * {@link #invokeRaceTrackerCallbacks(RaceTracker, Set) invoked afterwards}, outside the lock, because invoking them
-     * may block (e.g. tracker startup waiting for race logs to attach) and must not hold the global
-     * {@link #raceTrackersByRegattaLock} while doing so.
-     */
-    private Set<Consumer<RaceTracker>> removeListenersForNewRaceTracker(RaceTracker tracker) {
-        final RaceIdentifier raceIdentifier = tracker.getRaceIdentifier();
-        final Set<Consumer<RaceTracker>> result;
-        if (raceIdentifier != null) {
-            result = getRaceTrackerCallbacks().remove(raceIdentifier);
-        } else {
-            result = null;
-        }
-        return result;
-    }
-
-    /**
-     * Invokes the callbacks {@link #removeListenersForNewRaceTracker(RaceTracker) claimed} for a newly added
-     * {@code tracker}. Intended to be called <em>after</em> the {@link #raceTrackersByRegattaLock} write lock has been
-     * released, as a callback may block (e.g. waiting for race logs to attach) and holding the global lock across such
-     * a wait would stall all other readers and writers of {@link #raceTrackersByRegatta}.
-     */
-    private void invokeRaceTrackerCallbacks(RaceTracker tracker, Set<Consumer<RaceTracker>> callbacks) {
-        if (callbacks != null) {
-            callbacks.forEach((callback) -> callback.accept(tracker));
-        }
     }
 
     @Override
